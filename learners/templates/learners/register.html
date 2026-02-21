@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Learner Registration{% endblock %}
+
+{% block content %}
+  <h2>Register as a Learner</h2>
+
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="form-section">
+      <h2>Study Stream</h2>
+      {{ form.stream.errors }}
+      <label for="{{ form.stream.id_for_label }}">Select your study stream</label>
+      {{ form.stream }}
+    </div>
+
+    <div class="form-section">
+      <h2>Personal Information</h2>
+      {{ form.first_name.errors }}
+      <label for="{{ form.first_name.id_for_label }}">Name</label>
+      {{ form.first_name }}
+
+      {{ form.middle_name.errors }}
+      <label for="{{ form.middle_name.id_for_label }}">Middle Name</label>
+      {{ form.middle_name }}
+
+      {{ form.surname.errors }}
+      <label for="{{ form.surname.id_for_label }}">Surname</label>
+      {{ form.surname }}
+
+      {{ form.id_number.errors }}
+      <label for="{{ form.id_number.id_for_label }}">ID Number</label>
+      {{ form.id_number }}
+
+      {{ form.tax_number.errors }}
+      <label for="{{ form.tax_number.id_for_label }}">Tax Number</label>
+      {{ form.tax_number }}
+
+      {{ form.date_of_birth.errors }}
+      <label for="{{ form.date_of_birth.id_for_label }}">Date of Birth</label>
+      {{ form.date_of_birth }}
+
+      {{ form.race.errors }}
+      <label for="{{ form.race.id_for_label }}">Race</label>
+      {{ form.race }}
+
+      {{ form.gender.errors }}
+      <label for="{{ form.gender.id_for_label }}">Gender</label>
+      {{ form.gender }}
+
+      {{ form.previous_learnership_participation.errors }}
+      <label for="{{ form.previous_learnership_participation.id_for_label }}">
+        Previous Learnership Participation
+      </label>
+      {{ form.previous_learnership_participation }}
+    </div>
+
+    <div class="form-section">
+      <h2>Next of Kin</h2>
+      {{ form.next_of_kin_name.errors }}
+      <label for="{{ form.next_of_kin_name.id_for_label }}">Next of Kin Name</label>
+      {{ form.next_of_kin_name }}
+
+      {{ form.next_of_kin_age.errors }}
+      <label for="{{ form.next_of_kin_age.id_for_label }}">Next of Kin Age</label>
+      {{ form.next_of_kin_age }}
+
+      {{ form.next_of_kin_contact_number.errors }}
+      <label for="{{ form.next_of_kin_contact_number.id_for_label }}">Next of Kin Contact Number</label>
+      {{ form.next_of_kin_contact_number }}
+    </div>
+
+    <div class="form-section">
+      <h2>Contact Information</h2>
+      {{ form.contact_number.errors }}
+      <label for="{{ form.contact_number.id_for_label }}">Contact Number</label>
+      {{ form.contact_number }}
+
+      {{ form.personal_email.errors }}
+      <label for="{{ form.personal_email.id_for_label }}">Personal Email Address</label>
+      {{ form.personal_email }}
+
+      {{ form.work_email.errors }}
+      <label for="{{ form.work_email.id_for_label }}">Work Email Address</label>
+      {{ form.work_email }}
+
+      {{ form.home_address.errors }}
+      <label for="{{ form.home_address.id_for_label }}">Home Address</label>
+      {{ form.home_address }}
+
+      {{ form.street_address.errors }}
+      <label for="{{ form.street_address.id_for_label }}">Street Address</label>
+      {{ form.street_address }}
+
+      {{ form.area.errors }}
+      <label for="{{ form.area.id_for_label }}">Area</label>
+      {{ form.area }}
+
+      {{ form.province.errors }}
+      <label for="{{ form.province.id_for_label }}">Province</label>
+      {{ form.province }}
+
+      {{ form.postal_code.errors }}
+      <label for="{{ form.postal_code.id_for_label }}">Postal Code</label>
+      {{ form.postal_code }}
+    </div>
+
+    <div class="form-section">
+      <h2>Programme & Training Information</h2>
+      {{ form.qualification_id.errors }}
+      <label for="{{ form.qualification_id.id_for_label }}">Qualification ID</label>
+      {{ form.qualification_id }}
+
+      {{ form.learnership_registration_number.errors }}
+      <label for="{{ form.learnership_registration_number.id_for_label }}">Learnership Registration Number</label>
+      {{ form.learnership_registration_number }}
+
+      {{ form.course_name.errors }}
+      <label for="{{ form.course_name.id_for_label }}">Course Name</label>
+      {{ form.course_name }}
+
+      {{ form.start_date.errors }}
+      <label for="{{ form.start_date.id_for_label }}">Start Date</label>
+      {{ form.start_date }}
+
+      {{ form.end_date.errors }}
+      <label for="{{ form.end_date.id_for_label }}">End Date</label>
+      {{ form.end_date }}
+    </div>
+
+    <div class="form-section">
+      <h2>Previous Employment (Optional)</h2>
+      {{ form.company_name.errors }}
+      <label for="{{ form.company_name.id_for_label }}">Company Name</label>
+      {{ form.company_name }}
+
+      {{ form.company_contact_person.errors }}
+      <label for="{{ form.company_contact_person.id_for_label }}">Company Contact Person</label>
+      {{ form.company_contact_person }}
+
+      {{ form.company_contact_number.errors }}
+      <label for="{{ form.company_contact_number.id_for_label }}">Company Contact Number</label>
+      {{ form.company_contact_number }}
+
+      {{ form.company_email.errors }}
+      <label for="{{ form.company_email.id_for_label }}">Company Email Address</label>
+      {{ form.company_email }}
+    </div>
+
+    <div class="form-section">
+      <h2>Document Uploads (PDF only)</h2>
+      {{ form.matric_certificate.errors }}
+      <label for="{{ form.matric_certificate.id_for_label }}">Certified Matric Certificate (PDF)</label>
+      {{ form.matric_certificate }}
+
+      {{ form.id_copy.errors }}
+      <label for="{{ form.id_copy.id_for_label }}">Certified ID Copy (PDF)</label>
+      {{ form.id_copy }}
+
+      {{ form.bank_proof.errors }}
+      <label for="{{ form.bank_proof.id_for_label }}">Proof of Bank Account (PDF)</label>
+      {{ form.bank_proof }}
+
+      {{ form.tertiary_document.errors }}
+      <label for="{{ form.tertiary_document.id_for_label }}">Tertiary Qualification Documents (PDF, if applicable)</label>
+      {{ form.tertiary_document }}
+
+      {{ form.proof_of_address.errors }}
+      <label for="{{ form.proof_of_address.id_for_label }}">Proof of Address (PDF)</label>
+      {{ form.proof_of_address }}
+    </div>
+
+    <div class="form-section">
+      <h2>Consent</h2>
+      <p>
+        By submitting this form you consent to the processing of your personal information
+        for the purposes of learnership administration, reporting and compliance.
+      </p>
+    </div>
+
+    <button type="submit">Submit Registration</button>
+  </form>
+{% endblock %}
+

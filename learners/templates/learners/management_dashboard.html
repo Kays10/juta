@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+
+{% block title %}Management Portal - Learners{% endblock %}
+
+{% block content %}
+  <h2>Management Portal</h2>
+  <p>Use this view to find and review learner records captured through the registration portal.</p>
+
+  <form method="get" style="margin-bottom: 1rem;">
+    <label for="stream">Stream</label>
+    <select id="stream" name="stream">
+      <option value="">All</option>
+      <option value="IT" {% if stream == "IT" %}selected{% endif %}>IT</option>
+      <option value="MATHS" {% if stream == "MATHS" %}selected{% endif %}>Maths</option>
+    </select>
+
+    <label for="search">Name search</label>
+    <input type="text" id="search" name="search" value="{{ search }}">
+
+    <button type="submit">Filter</button>
+  </form>
+
+  <div class="form-section">
+    <h2>Learners</h2>
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="text-align:left; border-bottom: 1px solid #e0e0e0;">Name</th>
+          <th style="text-align:left; border-bottom: 1px solid #e0e0e0;">Stream</th>
+          <th style="text-align:left; border-bottom: 1px solid #e0e0e0;">ID Number</th>
+          <th style="text-align:left; border-bottom: 1px solid #e0e0e0;">Course</th>
+          <th style="text-align:left; border-bottom: 1px solid #e0e0e0;">Progress</th>
+          <th style="text-align:left; border-bottom: 1px solid #e0e0e0;">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+      {% for learner in learners %}
+        <tr>
+          <td>{{ learner.first_name }} {{ learner.surname }}</td>
+          <td>{{ learner.stream }}</td>
+          <td>{{ learner.id_number }}</td>
+          <td>{{ learner.course_name }}</td>
+          <td>
+            {% if learner.progress %}
+              {{ learner.progress.get_status_display }} ({{ learner.progress.completion_percentage }}%)
+            {% else %}
+              Not captured
+            {% endif %}
+          </td>
+          <td>
+            <a href="{% url 'management:learner_detail' learner.pk %}">View details</a>
+          </td>
+        </tr>
+      {% empty %}
+        <tr>
+          <td colspan="6">No learners found for the selected filters.</td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endblock %}
+

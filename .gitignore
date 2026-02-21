@@ -1,0 +1,12 @@
+db.sqlite3
+*.pyc
+__pycache__/
+.venv/
+env/
+venv/
+
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+
+.DS_Store

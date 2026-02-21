@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block title %}Learner Detail{% endblock %}
+
+{% block content %}
+  <h2>Learner Detail</h2>
+
+  <p><a href="{% url 'management:dashboard' %}">&larr; Back to list</a></p>
+
+  <div class="form-section">
+    <h2>Personal Information</h2>
+    <p><strong>Name:</strong> {{ learner.first_name }} {{ learner.middle_name }} {{ learner.surname }}</p>
+    <p><strong>Stream:</strong> {{ learner.stream }}</p>
+    <p><strong>ID Number:</strong> {{ learner.id_number }}</p>
+    <p><strong>Tax Number:</strong> {{ learner.tax_number }}</p>
+    <p><strong>Date of Birth:</strong> {{ learner.date_of_birth }}</p>
+    <p><strong>Race:</strong> {{ learner.race }}</p>
+    <p><strong>Gender:</strong> {{ learner.get_gender_display }}</p>
+    <p><strong>Previous Learnership Participation:</strong> {{ learner.previous_learnership_participation }}</p>
+    <p><strong>Next of Kin:</strong> {{ learner.next_of_kin_name }} ({{ learner.next_of_kin_age }}), {{ learner.next_of_kin_contact_number }}</p>
+    <p><strong>Employment Status:</strong> {{ learner.get_employment_status_display }}</p>
+  </div>
+
+  {% if learner.contact_information %}
+  <div class="form-section">
+    <h2>Contact Information</h2>
+    <p><strong>Contact Number:</strong> {{ learner.contact_information.contact_number }}</p>
+    <p><strong>Personal Email:</strong> {{ learner.contact_information.personal_email }}</p>
+    <p><strong>Work Email:</strong> {{ learner.contact_information.work_email }}</p>
+    <p><strong>Home Address:</strong> {{ learner.contact_information.home_address }}</p>
+    <p><strong>Street Address:</strong> {{ learner.contact_information.street_address }}</p>
+    <p><strong>Area:</strong> {{ learner.contact_information.area }}</p>
+    <p><strong>Province:</strong> {{ learner.contact_information.province }}</p>
+    <p><strong>Postal Code:</strong> {{ learner.contact_information.postal_code }}</p>
+  </div>
+  {% endif %}
+
+  <div class="form-section">
+    <h2>Programme & Training</h2>
+    <p><strong>Qualification ID:</strong> {{ learner.qualification_id }}</p>
+    <p><strong>Learnership Registration Number:</strong> {{ learner.learnership_registration_number }}</p>
+    <p><strong>Course Name:</strong> {{ learner.course_name }}</p>
+    <p><strong>Start Date:</strong> {{ learner.start_date }}</p>
+    <p><strong>End Date:</strong> {{ learner.end_date }}</p>
+  </div>
+
+  <div class="form-section">
+    <h2>Progress</h2>
+    {% if learner.progress %}
+      <p><strong>Status:</strong> {{ learner.progress.get_status_display }}</p>
+      <p><strong>Completion:</strong> {{ learner.progress.completion_percentage }}%</p>
+      <p><strong>Last Updated:</strong> {{ learner.progress.last_updated }}</p>
+      <p><strong>Notes:</strong> {{ learner.progress.notes }}</p>
+    {% else %}
+      <p>No progress information has been captured yet.</p>
+    {% endif %}
+  </div>
+
+  <div class="form-section">
+    <h2>Previous Employment</h2>
+    {% if learner.previous_employment.all %}
+      <ul>
+        {% for employment in learner.previous_employment.all %}
+          <li>
+            <strong>{{ employment.company_name }}</strong> -
+            {{ employment.company_contact_person }},
+            {{ employment.company_contact_number }},
+            {{ employment.company_email }}
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No previous employment information captured.</p>
+    {% endif %}
+  </div>
+
+  <div class="form-section">
+    <h2>Documents</h2>
+    {% if learner.documents.all %}
+      <ul>
+        {% for document in learner.documents.all %}
+          <li>
+            {{ document.get_document_type_display }} -
+            <a href="{{ document.file.url }}" target="_blank">View / Download</a>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p>No documents uploaded.</p>
+    {% endif %}
+  </div>
+{% endblock %}
+

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block title %}Learner Insights{% endblock %}
+
+{% block content %}
+  <h2>Learner Insights</h2>
+  <p>
+    Enter a natural language question about your learners or programmes.
+    Examples: "Which learners are at risk?" or "Show completed learners".
+  </p>
+
+  <form method="get">
+    <label for="q">Your question</label>
+    <input type="text" id="q" name="q" value="{{ query }}" />
+    <button type="submit">Generate Insight</button>
+  </form>
+
+  {% if insight %}
+    <div class="form-section">
+      <h2>Insight</h2>
+      <pre>{{ insight }}</pre>
+    </div>
+  {% endif %}
+{% endblock %}
+
