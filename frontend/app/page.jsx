@@ -4,7 +4,9 @@ export default function HomePage() {
       <header className="header">
         <div className="container header-content">
           <div className="brand">
-            <div className="logo-placeholder">LH</div>
+            <div className="logo-placeholder">
+              <img src="/logo.png" alt="Open Minded Institute logo" />
+            </div>
             <div className="brand-text">
               <h1>LH Open Minded Institute</h1>
               <p>Developing the next generation of IT professionals</p>
@@ -165,6 +167,26 @@ export default function HomePage() {
               At LH Open Minded Institute, we are not just training learners —
               we are developing the next generation of IT professionals.
             </p>
+          </div>
+        </section>
+
+        <section className="section section-alt">
+          <div className="container">
+            <h2>Our Facilities & Activities</h2>
+            <div className="gallery-grid">
+              <div className="gallery-item">
+                <img src="/images/facility-1.jpg" alt="Learners working on hardware" className="gallery-image" />
+              </div>
+              <div className="gallery-item">
+                <img src="/images/facility-2.jpg" alt="Business Development team" className="gallery-image" />
+              </div>
+              <div className="gallery-item">
+                <img src="/images/facility-3.jpg" alt="Student with institute banner" className="gallery-image" />
+              </div>
+              <div className="gallery-item">
+                <img src="/images/facility-4.jpg" alt="Classroom full of students with laptops" className="gallery-image" />
+              </div>
+            </div>
           </div>
         </section>
 

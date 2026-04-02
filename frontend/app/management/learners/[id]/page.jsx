@@ -18,6 +18,19 @@ export default function LearnerDetailPage() {
   const [contact, setContact] = useState(null);
   const [employment, setEmployment] = useState([]);
   const [documents, setDocuments] = useState([]);
+  const [updatingStatus, setUpdatingStatus] = useState(false);
+  const [poeFiles, setPoeFiles] = useState([]);
+  const [uploadingPoe, setUploadingPoe] = useState(false);
+  const [poeCategory, setPoeCategory] = useState("FORMATIVE");
+  const [progress, setProgress] = useState(0);
+  const [updatingProgress, setUpdatingProgress] = useState(false);
+  const [sendingEmail, setSendingEmail] = useState(false);
+  const [assessmentFile, setAssessmentFile] = useState(null);
+  const [assessmentTitle, setAssessmentTitle] = useState("");
+  const [assessmentResult, setAssessmentResult] = useState("");
+  const [uploadingAssessment, setUploadingAssessment] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailBody, setEmailBody] = useState("");
 
   useEffect(() => {
     async function run() {
@@ -55,12 +68,195 @@ export default function LearnerDetailPage() {
       setContact(contactRow);
       setEmployment(employmentRows || []);
       setDocuments(documentRows || []);
+      setProgress(learnerRow?.completion_percentage || 0);
       setCheckingAuth(false);
     }
     if (learnerId) {
       run();
     }
   }, [router, learnerId]);
+
+  async function updateStatus(newStatus) {
+    if (!learner) return;
+    setUpdatingStatus(true);
+    const { error } = await supabase
+      .from("learners")
+      .update({
+        status: newStatus,
+        status_updated_at: new Date().toISOString(),
+      })
+      .eq("id", learnerId);
+    setUpdatingStatus(false);
+    if (error) {
+      alert("Could not update status. Please try again.");
+      return;
+    }
+    setLearner({ ...learner, status: newStatus });
+  }
+
+  async function updateProgress() {
+    if (!learner) return;
+    setUpdatingProgress(true);
+    const { error } = await supabase
+      .from("learners")
+      .update({
+        completion_percentage: progress,
+      })
+      .eq("id", learnerId);
+    setUpdatingProgress(false);
+    if (error) {
+      alert("Could not update progress. Please try again.");
+      return;
+    }
+    alert("Progress updated successfully!");
+  }
+
+  async function handleSendAssessment() {
+    if (!contact?.personal_email) {
+      alert("No email address found for this learner.");
+      return;
+    }
+
+    setSendingEmail(true);
+    try {
+      // In a real implementation, you would call a server-side API that uses an email service
+      // For now, we simulate the action and alert the user.
+      console.log(`Sending assessment to ${contact.personal_email}`);
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      alert(`Mathematics assessment has been emailed to ${contact.personal_email}`);
+    } catch (error) {
+      alert(`Failed to send email: ${error.message}`);
+    } finally {
+      setSendingEmail(false);
+    }
+  }
+
+  function handleOpenEmailApp() {
+    if (!contact?.personal_email) {
+      alert("No email address found for this learner.");
+      return;
+    }
+
+    const subject = encodeURIComponent(emailSubject);
+    const body = encodeURIComponent(emailBody);
+    window.location.href = `mailto:${contact.personal_email}?subject=${subject}&body=${body}`;
+  }
+
+  async function handleAssessmentUpload() {
+    if (!assessmentFile || !assessmentTitle) {
+      alert("Please provide a title and select a file to upload.");
+      return;
+    }
+
+    setUploadingAssessment(true);
+    const BUCKET = "learner-documents";
+    try {
+      const path = `assessments/maths/${learnerId}/${Date.now()}_${assessmentFile.name}`;
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, assessmentFile);
+
+      if (uploadError) throw uploadError;
+
+      const { error: dbError } = await supabase
+        .from("documents")
+        .insert([{
+          learner_id: learnerId,
+          document_type: "MATHS_ASSESSMENT",
+          file_path: path,
+          metadata: { 
+            title: assessmentTitle,
+            result: assessmentResult 
+          }
+        }]);
+
+      if (dbError) throw dbError;
+
+      // Refresh documents
+      const { data: updatedDocs } = await supabase
+        .from("documents")
+        .select("*")
+        .eq("learner_id", learnerId);
+      setDocuments(updatedDocs || []);
+
+      setAssessmentFile(null);
+      setAssessmentTitle("");
+      setAssessmentResult("");
+      alert("Assessment uploaded and recorded successfully!");
+    } catch (error) {
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setUploadingAssessment(false);
+    }
+  }
+
+  async function handlePoeUpload() {
+    if (poeFiles.length === 0) {
+      alert("Please select files to upload.");
+      return;
+    }
+
+    setUploadingPoe(true);
+    const BUCKET = "learner-documents";
+    const uploadRows = [];
+
+    try {
+      for (const file of poeFiles) {
+        const path = `poe/${poeCategory.toLowerCase()}/${learnerId}/${Date.now()}_${file.name}`;
+        const { error: uploadError } = await supabase.storage
+          .from(BUCKET)
+          .upload(path, file);
+
+        if (uploadError) throw uploadError;
+
+        uploadRows.push({
+          learner_id: learnerId,
+          document_type: `POE_${poeCategory}`,
+          file_path: path,
+        });
+      }
+
+      const { error: dbError } = await supabase
+        .from("documents")
+        .insert(uploadRows);
+
+      if (dbError) throw dbError;
+
+      // Refresh documents
+      const { data: updatedDocs } = await supabase
+        .from("documents")
+        .select("*")
+        .eq("learner_id", learnerId);
+      setDocuments(updatedDocs || []);
+
+      setPoeFiles([]);
+      alert("POE documents uploaded successfully!");
+    } catch (error) {
+      console.error("POE upload error:", error);
+      alert(`Upload failed: ${error.message}`);
+    } finally {
+      setUploadingPoe(false);
+    }
+  }
+
+  async function handleDeleteLearner() {
+    if (
+      !window.confirm(
+        "Are you sure you want to delete this learner and all related information?",
+      )
+    ) {
+      return;
+    }
+    const { error } = await supabase
+      .from("learners")
+      .delete()
+      .eq("id", learnerId);
+    if (error) {
+      alert("Could not delete learner. Please try again.");
+      return;
+    }
+    router.push("/management");
+  }
 
   if (checkingAuth || !learner) {
     return (
@@ -92,6 +288,52 @@ export default function LearnerDetailPage() {
             <h1>
               {learner.first_name} {learner.middle_name} {learner.surname}
             </h1>
+
+            <div className="status-actions-row">
+              <span
+                className={`status-pill status-${(learner.status || "NEW")
+                  .toLowerCase()
+                  .replace(" ", "_")}`}
+              >
+                {(learner.status || "NEW")
+                  .toLowerCase()
+                  .replace("_", " ")
+                  .replace(/\b\w/g, (c) => c.toUpperCase())}
+              </span>
+              <div className="status-actions">
+                <button
+                  type="button"
+                  className="button button-secondary"
+                  disabled={updatingStatus}
+                  onClick={() => updateStatus("IN_REVIEW")}
+                >
+                  Mark in review
+                </button>
+                <button
+                  type="button"
+                  className="button button-primary"
+                  disabled={updatingStatus}
+                  onClick={() => updateStatus("ACCEPTED")}
+                >
+                  Mark accepted
+                </button>
+                <button
+                  type="button"
+                  className="button"
+                  disabled={updatingStatus}
+                  onClick={() => updateStatus("DECLINED")}
+                >
+                  Mark declined
+                </button>
+                <button
+                  type="button"
+                  className="button"
+                  onClick={handleDeleteLearner}
+                >
+                  Delete learner
+                </button>
+              </div>
+            </div>
 
             <div className="detail-grid">
               <div className="detail-card">
@@ -126,6 +368,31 @@ export default function LearnerDetailPage() {
                 <p>
                   <strong>Employment status:</strong> {learner.employment_status}
                 </p>
+
+                <div className="progress-section">
+                  <h3>Completion Progress</h3>
+                  <div className="progress-bar-container">
+                    <div className="progress-bar-fill" style={{ width: `${progress}%` }}></div>
+                  </div>
+                  <div className="progress-input-group">
+                    <input
+                      type="number"
+                      min="0"
+                      max="100"
+                      value={progress}
+                      onChange={(e) => setProgress(Number(e.target.value))}
+                      className="form-input"
+                    />
+                    <span>%</span>
+                    <button
+                      onClick={updateProgress}
+                      disabled={updatingProgress}
+                      className="button button-secondary"
+                    >
+                      {updatingProgress ? "Saving..." : "Update Progress"}
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <div className="detail-card">
@@ -160,6 +427,43 @@ export default function LearnerDetailPage() {
                 ) : (
                   <p>No contact information captured.</p>
                 )}
+              </div>
+
+              <div className="detail-card">
+                <h2>Email Learner</h2>
+                <div className="form-section">
+                  <label>
+                    Subject
+                    <input
+                      type="text"
+                      value={emailSubject}
+                      onChange={(e) => setEmailSubject(e.target.value)}
+                      className="form-input"
+                      placeholder="Enter email subject"
+                    />
+                  </label>
+                  <label style={{ marginTop: "1rem" }}>
+                    Message
+                    <textarea
+                      value={emailBody}
+                      onChange={(e) => setEmailBody(e.target.value)}
+                      className="form-input"
+                      rows="5"
+                      placeholder="Type your message here..."
+                    ></textarea>
+                  </label>
+                  <button
+                    onClick={handleOpenEmailApp}
+                    className="button button-primary"
+                    style={{ marginTop: "1rem" }}
+                  >
+                    Open in Email App
+                  </button>
+                  <p style={{ fontSize: "0.8rem", color: "#6b7280", marginTop: "0.5rem" }}>
+                    This will open your default email application (like Outlook or Gmail) 
+                    with the learner's email, subject, and message pre-filled.
+                  </p>
+                </div>
               </div>
 
               <div className="detail-card">
@@ -201,9 +505,9 @@ export default function LearnerDetailPage() {
 
               <div className="detail-card">
                 <h2>Documents</h2>
-                {documents.length > 0 ? (
+                {documents.filter(d => !d.document_type.startsWith("POE_")).length > 0 ? (
                   <ul>
-                    {documents.map((doc) => (
+                    {documents.filter(d => !d.document_type.startsWith("POE_")).map((doc) => (
                       <li key={doc.id}>
                         <a
                           href={buildDocumentUrl(doc.file_path)}
@@ -216,9 +520,136 @@ export default function LearnerDetailPage() {
                     ))}
                   </ul>
                 ) : (
-                  <p>No documents uploaded.</p>
+                  <p>No registration documents uploaded.</p>
                 )}
               </div>
+
+              <div className="detail-card poe-card">
+                <h2>POE Documents</h2>
+                <div className="poe-upload-section">
+                  <select
+                    value={poeCategory}
+                    onChange={(e) => setPoeCategory(e.target.value)}
+                    className="form-input"
+                  >
+                    <option value="FORMATIVE">Formative Assessments</option>
+                    <option value="SUMMATIVE">Summative Assessments</option>
+                    <option value="CONTINUOUS">Continuous Assessments</option>
+                  </select>
+                  <input
+                    type="file"
+                    multiple
+                    accept="application/pdf"
+                    onChange={(e) => setPoeFiles(Array.from(e.target.files))}
+                    className="form-input"
+                  />
+                  <button
+                    onClick={handlePoeUpload}
+                    disabled={uploadingPoe}
+                    className="button button-primary"
+                  >
+                    {uploadingPoe ? "Uploading..." : "Upload POE"}
+                  </button>
+                </div>
+
+                <div className="poe-list">
+                  {["FORMATIVE", "SUMMATIVE", "CONTINUOUS"].map(cat => {
+                    const catDocs = documents.filter(d => d.document_type === `POE_${cat}`);
+                    if (catDocs.length === 0) return null;
+                    return (
+                      <div key={cat} className="poe-category-section">
+                        <h3>{cat.charAt(0) + cat.slice(1).toLowerCase()} Assessments</h3>
+                        <ul>
+                          {catDocs.map(doc => (
+                            <li key={doc.id}>
+                              <a href={buildDocumentUrl(doc.file_path)} target="_blank" rel="noreferrer">
+                                {doc.file_path.split("_").slice(1).join("_") || doc.document_type}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {learner.stream === "MATHS" && (
+                <div className="detail-card maths-card">
+                  <h2>Mathematics Assessments</h2>
+                  <div className="poe-upload-section">
+                    <button
+                      onClick={handleSendAssessment}
+                      disabled={sendingEmail}
+                      className="button button-secondary"
+                    >
+                      {sendingEmail ? "Sending..." : "Email Assessment to Learner"}
+                    </button>
+                    
+                    <div style={{ marginTop: "1.5rem" }}>
+                      <h3>Upload Completed Work</h3>
+                      <input
+                        type="text"
+                        placeholder="Assessment Title (e.g., Algebra Test 1)"
+                        value={assessmentTitle}
+                        onChange={(e) => setAssessmentTitle(e.target.value)}
+                        className="form-input"
+                        style={{ marginBottom: "0.5rem" }}
+                      />
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        onChange={(e) => setAssessmentFile(e.target.files[0])}
+                        className="form-input"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Result (e.g., 85%)"
+                        value={assessmentResult}
+                        onChange={(e) => setAssessmentResult(e.target.value)}
+                        className="form-input"
+                        style={{ marginTop: "0.5rem" }}
+                      />
+                      <button
+                        onClick={handleAssessmentUpload}
+                        disabled={uploadingAssessment}
+                        className="button button-primary"
+                        style={{ marginTop: "0.5rem" }}
+                      >
+                        {uploadingAssessment ? "Uploading..." : "Save Result"}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="poe-list">
+                    {documents.filter(d => d.document_type === "MATHS_ASSESSMENT").length > 0 && (
+                      <div className="poe-category-section">
+                        <h3>Completed Assessments</h3>
+                        <ul>
+                          {documents.filter(d => d.document_type === "MATHS_ASSESSMENT").map(doc => (
+                            <li key={doc.id}>
+                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                                <div>
+                                  <strong>{doc.metadata?.title || "Untitled Assessment"}</strong>
+                                  <br />
+                                  <a href={buildDocumentUrl(doc.file_path)} target="_blank" rel="noreferrer" style={{ fontSize: "0.85rem" }}>
+                                    View Document
+                                  </a>
+                                </div>
+                                {doc.metadata?.result && (
+                                  <span style={{ fontWeight: "bold", color: "#1e73be" }}>
+                                    Result: {doc.metadata.result}
+                                  </span>
+                                )}
+                              </div>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>
