@@ -56,14 +56,16 @@ export default function RegisterPage() {
       !firstName ||
       !surname ||
       !idNumber ||
+      !startDate ||
+      !endDate ||
       (isIT &&
-        (!qualificationId || !courseName || !startDate || !endDate))
+        (!qualificationId || !courseName))
     ) {
       setError("Please complete all required fields before submitting.");
       return;
     }
 
-    if (isIT && endDate && startDate && endDate < startDate) {
+    if (endDate && startDate && endDate < startDate) {
       setError("End date cannot be before start date.");
       return;
     }
@@ -245,25 +247,29 @@ export default function RegisterPage() {
                 </label>
               </div>
 
-              {selectedStream === "IT" && (
+              {selectedStream && (
                 <div className="form-section">
                   <h2>Programme and training</h2>
-                  <label>
-                    Qualification ID*
-                    <input name="qualification_id" type="text" required />
-                  </label>
-                  <label>
-                    Learnership registration number*
-                    <input
-                      name="learnership_registration_number"
-                      type="text"
-                      required
-                    />
-                  </label>
-                  <label>
-                    Course name*
-                    <input name="course_name" type="text" required />
-                  </label>
+                  {selectedStream === "IT" && (
+                    <>
+                      <label>
+                        Qualification ID*
+                        <input name="qualification_id" type="text" required />
+                      </label>
+                      <label>
+                        Learnership registration number*
+                        <input
+                          name="learnership_registration_number"
+                          type="text"
+                          required
+                        />
+                      </label>
+                      <label>
+                        Course name*
+                        <input name="course_name" type="text" required />
+                      </label>
+                    </>
+                  )}
                   <label>
                     Start date*
                     <input name="start_date" type="date" required />

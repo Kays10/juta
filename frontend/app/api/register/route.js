@@ -35,8 +35,8 @@ export async function POST(request) {
     const idNumber = formData.get("id_number") || "";
     const qualificationId = formData.get("qualification_id") || "";
     const courseName = formData.get("course_name") || "";
-    let startDate = formData.get("start_date") || null;
-    let endDate = formData.get("end_date") || null;
+    const startDate = formData.get("start_date") || "";
+    const endDate = formData.get("end_date") || "";
 
     const isMaths = stream === "MATHS";
     const isIT = stream === "IT";
@@ -46,8 +46,10 @@ export async function POST(request) {
       !firstName ||
       !surname ||
       !idNumber ||
+      !startDate ||
+      !endDate ||
       (isIT &&
-        (!qualificationId || !courseName || !startDate || !endDate))
+        (!qualificationId || !courseName))
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -55,17 +57,11 @@ export async function POST(request) {
       );
     }
 
-    if (isIT && endDate && startDate && endDate < startDate) {
+    if (endDate && startDate && endDate < startDate) {
       return NextResponse.json(
         { error: "End date cannot be before start date" },
         { status: 400 },
       );
-    }
-
-    // For non-IT streams, ensure dates are null
-    if (!isIT) {
-      startDate = null;
-      endDate = null;
     }
 
     const learnerPayload = {
