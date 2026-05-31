@@ -38,15 +38,16 @@ export async function POST(request) {
     const startDate = formData.get("start_date") || "";
     const endDate = formData.get("end_date") || "";
 
+    const isMaths = stream === "MATHS";
+    const isIT = stream === "IT";
+
     if (
       !stream ||
       !firstName ||
       !surname ||
       !idNumber ||
-      !qualificationId ||
-      !courseName ||
-      !startDate ||
-      !endDate
+      (isIT &&
+        (!qualificationId || !courseName || !startDate || !endDate))
     ) {
       return NextResponse.json(
         { error: "Missing required fields" },
@@ -54,7 +55,7 @@ export async function POST(request) {
       );
     }
 
-    if (endDate && startDate && endDate < startDate) {
+    if (isIT && endDate && startDate && endDate < startDate) {
       return NextResponse.json(
         { error: "End date cannot be before start date" },
         { status: 400 },
@@ -153,9 +154,15 @@ export async function POST(request) {
     const addressFile = formData.get("proof_of_address");
 
     const docsToUpload = [
-      { type: "MATRIC", file: matricFile },
+      {
+        type: stream === "MATHS" ? "MATRIC_STATEMENT" : "MATRIC",
+        file: matricFile,
+      },
       { type: "ID", file: idFile },
-      { type: "BANK", file: bankFile },
+      {
+        type: stream === "MATHS" ? "MOTIVATIONAL_LETTER" : "BANK",
+        file: bankFile,
+      },
       { type: "TERTIARY", file: tertiaryFile },
       { type: "ADDRESS", file: addressFile },
     ];
