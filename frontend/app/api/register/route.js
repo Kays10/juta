@@ -35,8 +35,8 @@ export async function POST(request) {
     const idNumber = formData.get("id_number") || "";
     const qualificationId = formData.get("qualification_id") || "";
     const courseName = formData.get("course_name") || "";
-    const startDate = formData.get("start_date") || "";
-    const endDate = formData.get("end_date") || "";
+    const startDate = formData.get("start_date") || null;
+    const endDate = formData.get("end_date") || null;
 
     const isMaths = stream === "MATHS";
     const isIT = stream === "IT";
@@ -83,8 +83,8 @@ export async function POST(request) {
       learnership_registration_number:
         formData.get("learnership_registration_number") || "",
       course_name: courseName,
-      start_date: startDate,
-      end_date: endDate,
+      start_date: startDate || null,
+      end_date: endDate || null,
     };
 
     const { data: learner, error: learnerError } = await supabase
