@@ -25,6 +25,9 @@ async function uploadDocument(supabase, learnerId, documentType, file) {
 
 export async function POST(request) {
   try {
+    // Initialize Supabase server client
+    const supabase = createServerClient();
+
     const formData = await request.formData();
 
     const stream = formData.get("stream") || "";
