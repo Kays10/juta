@@ -78,9 +78,18 @@ export default function RegisterPage() {
         body: formData,
       });
 
-      if (!response.ok) {
+      let errorMsg = "Registration failed";
+      
+      try {
         const errorData = await response.json();
-        throw new Error(errorData.error || "Failed to submit registration");
+        errorMsg = errorData.error || errorMsg;
+      } catch (parseErr) {
+        // If JSON parse fails, use response status or default error
+        errorMsg = `Registration failed (Status ${response.status})`;
+      }
+      
+      if (!response.ok) {
+        throw new Error(errorMsg);
       }
 
       router.push("/register/success");

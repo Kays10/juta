@@ -24,8 +24,6 @@ async function uploadDocument(supabase, learnerId, documentType, file) {
 }
 
 export async function POST(request) {
-  const supabase = createServerClient();
-
   try {
     const formData = await request.formData();
 
@@ -40,6 +38,8 @@ export async function POST(request) {
 
     const isMaths = stream === "MATHS";
     const isIT = stream === "IT";
+
+    console.log("Registration data:", { stream, isMaths, isIT, startDate, endDate });
 
     if (
       !stream ||
@@ -200,10 +200,11 @@ export async function POST(request) {
       }
     }
 
-    return NextResponse.redirect(new URL("/register/success", request.url));
+    return NextResponse.json({ success: true });
   } catch (error) {
+    console.error("Unexpected registration error:", error);
     return NextResponse.json(
-      { error: "Unexpected error processing registration" },
+      { error: "Unexpected error processing registration: " + (error?.message || "Unknown error") },
       { status: 500 },
     );
   }
