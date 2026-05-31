@@ -35,8 +35,8 @@ export async function POST(request) {
     const idNumber = formData.get("id_number") || "";
     const qualificationId = formData.get("qualification_id") || "";
     const courseName = formData.get("course_name") || "";
-    const startDate = formData.get("start_date") || null;
-    const endDate = formData.get("end_date") || null;
+    let startDate = formData.get("start_date") || null;
+    let endDate = formData.get("end_date") || null;
 
     const isMaths = stream === "MATHS";
     const isIT = stream === "IT";
@@ -60,6 +60,12 @@ export async function POST(request) {
         { error: "End date cannot be before start date" },
         { status: 400 },
       );
+    }
+
+    // For non-IT streams, ensure dates are null
+    if (!isIT) {
+      startDate = null;
+      endDate = null;
     }
 
     const learnerPayload = {
