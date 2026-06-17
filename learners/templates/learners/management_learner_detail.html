@@ -35,6 +35,7 @@
   </div>
   {% endif %}
 
+  {% if learner.stream == "IT" %}
   <div class="form-section">
     <h2>Programme & Training</h2>
     <p><strong>Qualification ID:</strong> {{ learner.qualification_id }}</p>
@@ -43,6 +44,7 @@
     <p><strong>Start Date:</strong> {{ learner.start_date }}</p>
     <p><strong>End Date:</strong> {{ learner.end_date }}</p>
   </div>
+  {% endif %}
 
   <div class="form-section">
     <h2>Progress</h2>

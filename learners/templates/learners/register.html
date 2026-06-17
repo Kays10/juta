@@ -107,8 +107,8 @@
       {{ form.postal_code }}
     </div>
 
-    <div class="form-section">
-      <h2>Programme & Training Information</h2>
+    <div class="form-section" id="programme-section" style="display: none;">
+      <h2>Programme and training</h2>
       {{ form.qualification_id.errors }}
       <label for="{{ form.qualification_id.id_for_label }}">Qualification ID</label>
       {{ form.qualification_id }}
@@ -182,5 +182,25 @@
 
     <button type="submit">Submit Registration</button>
   </form>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const streamSelect = document.getElementById('id_stream');
+      const programmeSection = document.getElementById('programme-section');
+
+      function toggleSections() {
+        if (streamSelect.value === 'IT') {
+          programmeSection.style.display = 'block';
+        } else {
+          programmeSection.style.display = 'none';
+        }
+      }
+
+      if (streamSelect) {
+        streamSelect.addEventListener('change', toggleSections);
+        toggleSections();
+      }
+    });
+  </script>
 {% endblock %}
 

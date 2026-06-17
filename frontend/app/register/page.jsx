@@ -56,6 +56,7 @@ export default function RegisterPage() {
       !firstName ||
       !surname ||
       !idNumber ||
+
       !startDate ||
       !endDate ||
       (isIT &&

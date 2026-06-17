@@ -54,11 +54,11 @@ class Learner(models.Model):
         blank=True,
     )
 
-    qualification_id = models.CharField(max_length=100)
-    learnership_registration_number = models.CharField(max_length=100)
-    course_name = models.CharField(max_length=255)
-    start_date = models.DateField()
-    end_date = models.DateField()
+    qualification_id = models.CharField(max_length=100, blank=True)
+    learnership_registration_number = models.CharField(max_length=100, blank=True)
+    course_name = models.CharField(max_length=255, blank=True)
+    start_date = models.DateField(null=True, blank=True)
+    end_date = models.DateField(null=True, blank=True)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

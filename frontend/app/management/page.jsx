@@ -159,9 +159,9 @@ export default function ManagementDashboardPage() {
                         </td>
                         <td>{learner.stream}</td>
                         <td>{learner.id_number}</td>
-                        <td>{learner.course_name}</td>
-                        <td>{learner.start_date}</td>
-                        <td>{learner.end_date}</td>
+                        <td>{learner.course_name || "—"}</td>
+                        <td>{learner.start_date || "—"}</td>
+                        <td>{learner.end_date || "—"}</td>
                         <td>
                           <span
                             className={`status-pill status-${(

@@ -14,7 +14,10 @@ from .models import (
 
 
 class LearnerRegistrationForm(forms.Form):
-    stream = forms.ChoiceField(choices=Learner.STREAM_CHOICES)
+    stream = forms.ChoiceField(
+        choices=[("", "Select stream")] + Learner.STREAM_CHOICES,
+        required=True,
+    )
 
     first_name = forms.CharField(max_length=150)
     middle_name = forms.CharField(max_length=150, required=False)
@@ -44,11 +47,15 @@ class LearnerRegistrationForm(forms.Form):
     province = forms.CharField(max_length=100)
     postal_code = forms.CharField(max_length=20)
 
-    qualification_id = forms.CharField(max_length=100)
-    learnership_registration_number = forms.CharField(max_length=100)
-    course_name = forms.CharField(max_length=255)
-    start_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
-    end_date = forms.DateField(widget=forms.DateInput(attrs={"type": "date"}))
+    qualification_id = forms.CharField(max_length=100, required=False)
+    learnership_registration_number = forms.CharField(max_length=100, required=False)
+    course_name = forms.CharField(max_length=255, required=False)
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}), required=False
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date"}), required=False
+    )
 
     company_name = forms.CharField(max_length=255, required=False)
     company_contact_person = forms.CharField(max_length=255, required=False)
@@ -63,8 +70,22 @@ class LearnerRegistrationForm(forms.Form):
 
     def clean(self) -> dict[str, Any]:
         cleaned_data = super().clean()
+        stream = cleaned_data.get("stream")
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+
+        if stream != Learner.STREAM_MATHS:
+            required_fields = [
+                "qualification_id",
+                "learnership_registration_number",
+                "course_name",
+                "start_date",
+                "end_date",
+            ]
+            for field in required_fields:
+                if not cleaned_data.get(field):
+                    self.add_error(field, "This field is required.")
+
         if start_date and end_date and end_date < start_date:
             raise ValidationError("End date cannot be before start date.")
         return cleaned_data
@@ -123,13 +144,13 @@ class LearnerRegistrationForm(forms.Form):
             next_of_kin_age=data["next_of_kin_age"],
             next_of_kin_contact_number=data["next_of_kin_contact_number"],
             employment_status=data.get("employment_status") or "",
-            qualification_id=data["qualification_id"],
-            learnership_registration_number=data[
-                "learnership_registration_number"
-            ],
-            course_name=data["course_name"],
-            start_date=data["start_date"],
-            end_date=data["end_date"],
+            qualification_id=data.get("qualification_id", ""),
+            learnership_registration_number=data.get(
+                "learnership_registration_number", ""
+            ),
+            course_name=data.get("course_name", ""),
+            start_date=data.get("start_date"),
+            end_date=data.get("end_date"),
         )
 
         ContactInformation.objects.create(

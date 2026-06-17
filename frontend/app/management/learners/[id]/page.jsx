@@ -466,42 +466,46 @@ export default function LearnerDetailPage() {
                 </div>
               </div>
 
-              <div className="detail-card">
-                <h2>Programme and training</h2>
-                <p>
-                  <strong>Qualification ID:</strong> {learner.qualification_id}
-                </p>
-                <p>
-                  <strong>Learnership registration number:</strong>{" "}
-                  {learner.learnership_registration_number}
-                </p>
-                <p>
-                  <strong>Course name:</strong> {learner.course_name}
-                </p>
-                <p>
-                  <strong>Start date:</strong> {learner.start_date}
-                </p>
-                <p>
-                  <strong>End date:</strong> {learner.end_date}
-                </p>
-              </div>
+              {learner.stream === "IT" && (
+                <div className="detail-card">
+                  <h2>Programme and training</h2>
+                  <p>
+                    <strong>Qualification ID:</strong> {learner.qualification_id}
+                  </p>
+                  <p>
+                    <strong>Learnership registration number:</strong>{" "}
+                    {learner.learnership_registration_number}
+                  </p>
+                  <p>
+                    <strong>Course name:</strong> {learner.course_name}
+                  </p>
+                  <p>
+                    <strong>Start date:</strong> {learner.start_date}
+                  </p>
+                  <p>
+                    <strong>End date:</strong> {learner.end_date}
+                  </p>
+                </div>
+              )}
 
-              <div className="detail-card">
-                <h2>Previous employment</h2>
-                {employment.length > 0 ? (
-                  <ul>
-                    {employment.map((job) => (
-                      <li key={job.id}>
-                        <strong>{job.company_name}</strong> –{" "}
-                        {job.company_contact_person},{" "}
-                        {job.company_contact_number}, {job.company_email}
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No previous employment information captured.</p>
-                )}
-              </div>
+              {learner.stream === "IT" && (
+                <div className="detail-card">
+                  <h2>Previous employment</h2>
+                  {employment.length > 0 ? (
+                    <ul>
+                      {employment.map((job) => (
+                        <li key={job.id}>
+                          <strong>{job.company_name}</strong> –{" "}
+                          {job.company_contact_person},{" "}
+                          {job.company_contact_number}, {job.company_email}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p>No previous employment information captured.</p>
+                  )}
+                </div>
+              )}
 
               <div className="detail-card">
                 <h2>Documents</h2>
