@@ -3,15 +3,6 @@ import { createServerClient } from "../../../lib/supabaseServerClient";
 
 const BUCKET = "learner-documents";
 
-// Increase API body size limit to 50MB (for large document uploads)
-export const config = {
-  api: {
-    bodyParser: {
-      sizeLimit: "50mb",
-    },
-  },
-};
-
 async function uploadDocument(supabase, learnerId, documentType, file) {
   if (!file) return null;
   const ext = ".pdf";
