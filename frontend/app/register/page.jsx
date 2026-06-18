@@ -17,6 +17,8 @@ export default function RegisterPage() {
 
     const form = event.currentTarget;
     const formData = new FormData(form);
+    
+    // Client-side file validation
     const fileFields = [
       "matric_certificate",
       "id_copy",
@@ -56,11 +58,9 @@ export default function RegisterPage() {
       !firstName ||
       !surname ||
       !idNumber ||
-
       !startDate ||
       !endDate ||
-      (isIT &&
-        (!qualificationId || !courseName))
+      (isIT && (!qualificationId || !courseName))
     ) {
       setError("Please complete all required fields before submitting.");
       return;
@@ -74,23 +74,104 @@ export default function RegisterPage() {
     setSubmitting(true);
 
     try {
+      // Step 1: Upload files directly to Supabase Storage (from browser)
+      // This bypasses Next.js API route size limits
+      const documentRows = [];
+      
+      const docsToUpload = [
+        {
+          type: stream === "MATHS" ? "MATRIC_STATEMENT" : "MATRIC",
+          fieldName: "matric_certificate",
+        },
+        { type: "ID", fieldName: "id_copy" },
+        {
+          type: stream === "MATHS" ? "MOTIVATIONAL_LETTER" : "BANK",
+          fieldName: "bank_proof",
+        },
+        { type: "TERTIARY", fieldName: "tertiary_document" },
+        { type: "ADDRESS", fieldName: "proof_of_address" },
+      ];
+
+      // We'll generate a temporary learner ID for file paths
+      const tempLearnerId = `temp_${Date.now()}`;
+
+      for (const doc of docsToUpload) {
+        const file = formData.get(doc.fieldName);
+        if (!file || !file.size) continue;
+
+        const safeType = doc.type.toLowerCase();
+        const ext = ".pdf";
+        const path = `${safeType}/${tempLearnerId}/${Date.now()}_${file.name}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("learner-documents")
+          .upload(path, file, {
+            contentType: "application/pdf",
+            upsert: false,
+          });
+
+        if (uploadError) {
+          throw new Error(`Failed to upload ${doc.type}: ${uploadError.message}`);
+        }
+
+        documentRows.push({
+          document_type: doc.type,
+          file_path: path,
+        });
+      }
+
+      // Step 2: Send all data as JSON to API (no files, just metadata)
+      const learnerData = {
+        stream,
+        first_name: firstName,
+        middle_name: formData.get("middle_name") || "",
+        surname,
+        id_number: idNumber,
+        tax_number: formData.get("tax_number") || "",
+        date_of_birth: formData.get("date_of_birth") || null,
+        race: formData.get("race") || "",
+        gender: formData.get("gender") || "",
+        previous_learnership_participation:
+          formData.get("previous_learnership_participation") === "on",
+        next_of_kin_name: formData.get("next_of_kin_name") || "",
+        next_of_kin_age: Number(formData.get("next_of_kin_age") || 0),
+        next_of_kin_contact_number:
+          formData.get("next_of_kin_contact_number") || "",
+        employment_status: formData.get("employment_status") || "",
+        qualification_id: qualificationId,
+        learnership_registration_number:
+          formData.get("learnership_registration_number") || "",
+        course_name: courseName,
+        start_date: startDate,
+        end_date: endDate,
+        contact: {
+          contact_number: formData.get("contact_number") || "",
+          personal_email: formData.get("personal_email") || "",
+          work_email: formData.get("work_email") || "",
+          home_address: formData.get("home_address") || "",
+          street_address: formData.get("street_address") || "",
+          area: formData.get("area") || "",
+          province: formData.get("province") || "",
+          postal_code: formData.get("postal_code") || "",
+        },
+        company_name: formData.get("company_name") || "",
+        company_contact_person: formData.get("company_contact_person") || "",
+        company_contact_number: formData.get("company_contact_number") || "",
+        company_email: formData.get("company_email") || "",
+        documents: documentRows,
+      };
+
       const response = await fetch("/api/register", {
         method: "POST",
-        body: formData,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(learnerData),
       });
 
-      let errorMsg = "Registration failed";
-      
-      try {
-        const errorData = await response.json();
-        errorMsg = errorData.error || errorMsg;
-      } catch (parseErr) {
-        // If JSON parse fails, use response status or default error
-        errorMsg = `Registration failed (Status ${response.status})`;
-      }
-      
       if (!response.ok) {
-        throw new Error(errorMsg);
+        const errorData = await response.json();
+        throw new Error(errorData.error || `Registration failed (Status ${response.status})`);
       }
 
       router.push("/register/success");
