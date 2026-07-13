@@ -7,13 +7,13 @@
   },
   {
     "key": "NEXT_PUBLIC_SUPABASE_ANON_KEY",
-    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsZmhlZnNkd3Zxc2tmYmZsdWVnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM5MzM3MDAsImV4cCI6MjA5OTUwOTcwMH0.27znf-rCU2rfSx5W0Iw_Kushcl7Uepbb2psSL0PiENo",
+    "value": "sb_publishable_OH3PnS3WjYxG7fM6MNwTPw_gMITlFrO",
     "type": "plain",
     "target": ["production", "preview", "development"]
   },
   {
     "key": "SUPABASE_SERVICE_ROLE_KEY",
-    "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhsZmhlZnNkd3Zxc2tmYmZsdWVnIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MzkzMzcwMCwiZXhwIjo0MDk5NTA5NzAwfQ.BN62Rnel3wfU2uK50QeM2e1qjJsiuJAzf05hrElLAbk",
+    "value": "sb_secret_fmT2mBaB4CtVPzx8hB6FRQ_Z2B3NCEd",
     "type": "secret",
     "target": ["production", "preview", "development"]
   },
