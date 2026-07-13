@@ -5,7 +5,7 @@ export default function HomePage() {
         <div className="container header-content">
           <div className="brand">
             <div className="logo-placeholder">
-              <img src="/logo.png" alt="Juta Consulting logo" />
+              <img src="/favicon.png" alt="Juta Consulting logo" />
             </div>
             <div className="brand-text">
               <h1>Juta Consulting</h1>
