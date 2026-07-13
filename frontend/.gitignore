@@ -3,5 +3,6 @@
 .env
 .env.*.local
 vercel-import.env
+vercel-env.json
 node_modules
 .next

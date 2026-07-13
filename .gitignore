@@ -8,8 +8,9 @@ venv/
 frontend/node_modules/
 frontend/.next/
 frontend/.env.local
+frontend/vercel-import.env
+frontend/vercel-env.json
 
 .DS_Store
 .vercel
 .env*.local
-.env*
