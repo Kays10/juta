@@ -216,7 +216,7 @@ a {
   opacity: 0;
   background: radial-gradient(
     circle at top left,
-    rgba(30, 115, 190, 0.08),
+    rgba(26, 44, 90, 0.08),
     transparent 50%
   );
   transition: opacity 180ms ease;
