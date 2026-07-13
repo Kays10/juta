@@ -89,13 +89,6 @@ export default function HomePage() {
                   digital economy.
                 </p>
               </div>
-              <div className="card">
-                <h3>Maths Support Programme</h3>
-                <p>
-                  Strengthen Mathematics performance through structured support
-                  and mastery of key concepts.
-                </p>
-              </div>
             </div>
           </div>
         </section>
@@ -128,27 +121,6 @@ export default function HomePage() {
               <li>Be between the ages of 18 – 35 years</li>
               <li>Demonstrate a strong interest in Information Technology</li>
             </ul>
-          </div>
-        </section>
-
-        <section className="section section-alt">
-          <div className="container">
-            <h2>Maths Support Programme</h2>
-            <p>
-              In addition to our IT qualifications, Juta Consulting
-              offers a Maths Support Programme designed to strengthen
-              Mathematics performance.
-            </p>
-            <p>This programme is suitable for:</p>
-            <ul className="list">
-              <li>Learners rewriting Matric</li>
-              <li>High school learners currently studying Mathematics</li>
-            </ul>
-            <p>
-              The programme supports learners in mastering core Mathematics
-              concepts, improving analytical thinking, and building a strong
-              academic foundation for IT-related careers and further studies.
-            </p>
           </div>
         </section>
 
@@ -195,9 +167,7 @@ export default function HomePage() {
             <h2>Take the Next Step</h2>
             <p>
               Apply today and begin your journey toward becoming an IT
-              professional. If you are interested in our Maths Support Programme
-              and would like to improve your Mathematics marks, you can also
-              apply here.
+              professional.
             </p>
             <a
               href="/register"

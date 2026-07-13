@@ -7,7 +7,6 @@ import { supabase } from "../../lib/supabaseClient";
 export default function RegisterPage() {
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [selectedStream, setSelectedStream] = useState("");
   const router = useRouter();
 
   async function handleSubmit(event) {
@@ -41,7 +40,7 @@ export default function RegisterPage() {
       return;
     }
 
-    const stream = formData.get("stream") || "";
+    const stream = "IT";
     const firstName = formData.get("first_name") || "";
     const surname = formData.get("surname") || "";
     const idNumber = formData.get("id_number") || "";
@@ -50,17 +49,14 @@ export default function RegisterPage() {
     const startDate = formData.get("start_date") || "";
     const endDate = formData.get("end_date") || "";
 
-    const isMaths = stream === "MATHS";
-    const isIT = stream === "IT";
-
     if (
-      !stream ||
       !firstName ||
       !surname ||
       !idNumber ||
+      !qualificationId ||
+      !courseName ||
       !startDate ||
-      !endDate ||
-      (isIT && (!qualificationId || !courseName))
+      !endDate
     ) {
       setError("Please complete all required fields before submitting.");
       return;
@@ -80,12 +76,12 @@ export default function RegisterPage() {
       
       const docsToUpload = [
         {
-          type: stream === "MATHS" ? "MATRIC_STATEMENT" : "MATRIC",
+          type: "MATRIC",
           fieldName: "matric_certificate",
         },
         { type: "ID", fieldName: "id_copy" },
         {
-          type: stream === "MATHS" ? "MOTIVATIONAL_LETTER" : "BANK",
+          type: "BANK",
           fieldName: "bank_proof",
         },
         { type: "TERTIARY", fieldName: "tertiary_document" },
@@ -202,23 +198,6 @@ export default function RegisterPage() {
               style={{ marginTop: "1.5rem" }}
             >
               <div className="form-section">
-                <h2>Programme stream</h2>
-                <label>
-                  Stream*
-                  <select
-                    name="stream"
-                    required
-                    value={selectedStream}
-                    onChange={(e) => setSelectedStream(e.target.value)}
-                  >
-                    <option value="">Select stream</option>
-                    <option value="IT">IT</option>
-                    <option value="MATHS">Maths</option>
-                  </select>
-                </label>
-              </div>
-
-              <div className="form-section">
                 <h2>Personal information</h2>
                 <label>
                   First name*
@@ -287,20 +266,18 @@ export default function RegisterPage() {
                 </label>
               </div>
 
-              {selectedStream === "IT" && (
-                <div className="form-section">
-                  <h2>Employment status</h2>
-                  <label>
-                    Employment status
-                    <select name="employment_status">
-                      <option value="">Select status</option>
-                      <option value="UNEMPLOYED">Unemployed</option>
-                      <option value="EMPLOYED">Employed</option>
-                      <option value="STUDENT">Student</option>
-                    </select>
-                  </label>
-                </div>
-              )}
+              <div className="form-section">
+                <h2>Employment status</h2>
+                <label>
+                  Employment status
+                  <select name="employment_status">
+                    <option value="">Select status</option>
+                    <option value="UNEMPLOYED">Unemployed</option>
+                    <option value="EMPLOYED">Employed</option>
+                    <option value="STUDENT">Student</option>
+                  </select>
+                </label>
+              </div>
 
               <div className="form-section">
                 <h2>Contact information</h2>
@@ -338,61 +315,53 @@ export default function RegisterPage() {
                 </label>
               </div>
 
-              {selectedStream && (
-                <div className="form-section">
-                  <h2>Programme and training</h2>
-                  {selectedStream === "IT" && (
-                    <>
-                      <label>
-                        Qualification ID*
-                        <input name="qualification_id" type="text" required />
-                      </label>
-                      <label>
-                        Learnership registration number*
-                        <input
-                          name="learnership_registration_number"
-                          type="text"
-                          required
-                        />
-                      </label>
-                      <label>
-                        Course name*
-                        <input name="course_name" type="text" required />
-                      </label>
-                    </>
-                  )}
-                  <label>
-                    Start date*
-                    <input name="start_date" type="date" required />
-                  </label>
-                  <label>
-                    End date*
-                    <input name="end_date" type="date" required />
-                  </label>
-                </div>
-              )}
+              <div className="form-section">
+                <h2>Programme and training</h2>
+                <label>
+                  Qualification ID*
+                  <input name="qualification_id" type="text" required />
+                </label>
+                <label>
+                  Learnership registration number*
+                  <input
+                    name="learnership_registration_number"
+                    type="text"
+                    required
+                  />
+                </label>
+                <label>
+                  Course name*
+                  <input name="course_name" type="text" required />
+                </label>
+                <label>
+                  Start date*
+                  <input name="start_date" type="date" required />
+                </label>
+                <label>
+                  End date*
+                  <input name="end_date" type="date" required />
+                </label>
+              </div>
 
-              {selectedStream === "IT" && (
-                <div className="form-section">
-                  <h2>Previous employment (optional)</h2>
-                  <label>
-                    Company name
-                    <input name="company_name" type="text" />
-                  </label>
-                  <label>
-                    Company contact person
-                    <input name="company_contact_person" type="text" />
-                  </label>
-                  <label>
-                    Company contact number
-                    <input name="company_contact_number" type="text" />
-                  </label>
-                  <label>
-                    Company email
-                    <input name="company_email" type="email" />
-                  </label>
-                </div>
-              )}
+              <div className="form-section">
+                <h2>Previous employment (optional)</h2>
+                <label>
+                  Company name
+                  <input name="company_name" type="text" />
+                </label>
+                <label>
+                  Company contact person
+                  <input name="company_contact_person" type="text" />
+                </label>
+                <label>
+                  Company contact number
+                  <input name="company_contact_number" type="text" />
+                </label>
+                <label>
+                  Company email
+                  <input name="company_email" type="email" />
+                </label>
+              </div>
 
               <div className="form-section">
                 <h2>Required documents (PDF only)</h2>
@@ -406,9 +375,7 @@ export default function RegisterPage() {
                   </span>
                 </p>
                 <label>
-                  {selectedStream === "MATHS"
-                    ? "Certified Matric Statement (PDF)*"
-                    : "Certified Matric Certificate (PDF)*"}
+                  Certified Matric Certificate (PDF)*
                   <input
                     name="matric_certificate"
                     type="file"
@@ -426,9 +393,7 @@ export default function RegisterPage() {
                   />
                 </label>
                 <label>
-                  {selectedStream === "MATHS"
-                    ? "Motivational Letter (PDF)*"
-                    : "Proof of Bank Account (PDF)*"}
+                  Proof of Bank Account (PDF)*
                   <input
                     name="bank_proof"
                     type="file"
@@ -436,16 +401,14 @@ export default function RegisterPage() {
                     required
                   />
                 </label>
-                {selectedStream === "IT" && (
-                  <label>
-                    Tertiary Qualification Document (PDF)
-                    <input
-                      name="tertiary_document"
-                      type="file"
-                      accept="application/pdf"
-                    />
-                  </label>
-                )}
+                <label>
+                  Tertiary Qualification Document (PDF)
+                  <input
+                    name="tertiary_document"
+                    type="file"
+                    accept="application/pdf"
+                  />
+                </label>
                 <label>
                   Proof of Address (PDF)*
                   <input

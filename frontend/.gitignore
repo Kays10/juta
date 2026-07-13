@@ -1,7 +1,7 @@
 .vercel
 .env.local
 .env
+.env.*.local
+vercel-import.env
 node_modules
 .next
-
-.env*

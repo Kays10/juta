@@ -8,7 +8,6 @@ export default function ManagementDashboardPage() {
   const router = useRouter();
   const [checkingAuth, setCheckingAuth] = useState(true);
   const [learners, setLearners] = useState([]);
-  const [streamFilter, setStreamFilter] = useState("");
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -38,8 +37,6 @@ export default function ManagementDashboardPage() {
   }
 
   const filteredLearners = learners.filter((learner) => {
-    const matchesStream =
-      !streamFilter || learner.stream === streamFilter.toUpperCase();
     const fullName = `${learner.first_name} ${learner.surname}`.toLowerCase();
     const matchesSearch =
       !search ||
@@ -48,7 +45,7 @@ export default function ManagementDashboardPage() {
     const matchesStatus =
       !statusFilter ||
       (learner.status || "NEW").toUpperCase() === statusFilter.toUpperCase();
-    return matchesStream && matchesSearch && matchesStatus;
+    return matchesSearch && matchesStatus;
   });
 
   if (checkingAuth) {
@@ -97,17 +94,6 @@ export default function ManagementDashboardPage() {
 
             <div className="management-panel">
               <div className="management-filters">
-                <label>
-                  Stream
-                  <select
-                    value={streamFilter}
-                    onChange={(event) => setStreamFilter(event.target.value)}
-                  >
-                    <option value="">All</option>
-                    <option value="IT">IT</option>
-                    <option value="MATHS">Maths</option>
-                  </select>
-                </label>
                 <label>
                   Application status
                   <select

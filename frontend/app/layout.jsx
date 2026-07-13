@@ -2,7 +2,7 @@ import "./globals.css";
 
 export const metadata = {
   title: "Juta Consulting",
-  description: "Future-focused IT and Mathematics programmes",
+  description: "Future-focused IT programmes",
   icons: {
     icon: "/favicon.png",
   },

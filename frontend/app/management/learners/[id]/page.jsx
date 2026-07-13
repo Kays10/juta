@@ -24,11 +24,6 @@ export default function LearnerDetailPage() {
   const [poeCategory, setPoeCategory] = useState("FORMATIVE");
   const [progress, setProgress] = useState(0);
   const [updatingProgress, setUpdatingProgress] = useState(false);
-  const [sendingEmail, setSendingEmail] = useState(false);
-  const [assessmentFile, setAssessmentFile] = useState(null);
-  const [assessmentTitle, setAssessmentTitle] = useState("");
-  const [assessmentResult, setAssessmentResult] = useState("");
-  const [uploadingAssessment, setUploadingAssessment] = useState(false);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailBody, setEmailBody] = useState("");
 
@@ -111,26 +106,6 @@ export default function LearnerDetailPage() {
     alert("Progress updated successfully!");
   }
 
-  async function handleSendAssessment() {
-    if (!contact?.personal_email) {
-      alert("No email address found for this learner.");
-      return;
-    }
-
-    setSendingEmail(true);
-    try {
-      // In a real implementation, you would call a server-side API that uses an email service
-      // For now, we simulate the action and alert the user.
-      console.log(`Sending assessment to ${contact.personal_email}`);
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      alert(`Mathematics assessment has been emailed to ${contact.personal_email}`);
-    } catch (error) {
-      alert(`Failed to send email: ${error.message}`);
-    } finally {
-      setSendingEmail(false);
-    }
-  }
-
   function handleOpenEmailApp() {
     if (!contact?.personal_email) {
       alert("No email address found for this learner.");
@@ -140,54 +115,6 @@ export default function LearnerDetailPage() {
     const subject = encodeURIComponent(emailSubject);
     const body = encodeURIComponent(emailBody);
     window.location.href = `mailto:${contact.personal_email}?subject=${subject}&body=${body}`;
-  }
-
-  async function handleAssessmentUpload() {
-    if (!assessmentFile || !assessmentTitle) {
-      alert("Please provide a title and select a file to upload.");
-      return;
-    }
-
-    setUploadingAssessment(true);
-    const BUCKET = "learner-documents";
-    try {
-      const path = `assessments/maths/${learnerId}/${Date.now()}_${assessmentFile.name}`;
-      const { error: uploadError } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, assessmentFile);
-
-      if (uploadError) throw uploadError;
-
-      const { error: dbError } = await supabase
-        .from("documents")
-        .insert([{
-          learner_id: learnerId,
-          document_type: "MATHS_ASSESSMENT",
-          file_path: path,
-          metadata: { 
-            title: assessmentTitle,
-            result: assessmentResult 
-          }
-        }]);
-
-      if (dbError) throw dbError;
-
-      // Refresh documents
-      const { data: updatedDocs } = await supabase
-        .from("documents")
-        .select("*")
-        .eq("learner_id", learnerId);
-      setDocuments(updatedDocs || []);
-
-      setAssessmentFile(null);
-      setAssessmentTitle("");
-      setAssessmentResult("");
-      alert("Assessment uploaded and recorded successfully!");
-    } catch (error) {
-      alert(`Upload failed: ${error.message}`);
-    } finally {
-      setUploadingAssessment(false);
-    }
   }
 
   async function handlePoeUpload() {
@@ -577,83 +504,6 @@ export default function LearnerDetailPage() {
                   })}
                 </div>
               </div>
-
-              {learner.stream === "MATHS" && (
-                <div className="detail-card maths-card">
-                  <h2>Mathematics Assessments</h2>
-                  <div className="poe-upload-section">
-                    <button
-                      onClick={handleSendAssessment}
-                      disabled={sendingEmail}
-                      className="button button-secondary"
-                    >
-                      {sendingEmail ? "Sending..." : "Email Assessment to Learner"}
-                    </button>
-                    
-                    <div style={{ marginTop: "1.5rem" }}>
-                      <h3>Upload Completed Work</h3>
-                      <input
-                        type="text"
-                        placeholder="Assessment Title (e.g., Algebra Test 1)"
-                        value={assessmentTitle}
-                        onChange={(e) => setAssessmentTitle(e.target.value)}
-                        className="form-input"
-                        style={{ marginBottom: "0.5rem" }}
-                      />
-                      <input
-                        type="file"
-                        accept="application/pdf"
-                        onChange={(e) => setAssessmentFile(e.target.files[0])}
-                        className="form-input"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Result (e.g., 85%)"
-                        value={assessmentResult}
-                        onChange={(e) => setAssessmentResult(e.target.value)}
-                        className="form-input"
-                        style={{ marginTop: "0.5rem" }}
-                      />
-                      <button
-                        onClick={handleAssessmentUpload}
-                        disabled={uploadingAssessment}
-                        className="button button-primary"
-                        style={{ marginTop: "0.5rem" }}
-                      >
-                        {uploadingAssessment ? "Uploading..." : "Save Result"}
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="poe-list">
-                    {documents.filter(d => d.document_type === "MATHS_ASSESSMENT").length > 0 && (
-                      <div className="poe-category-section">
-                        <h3>Completed Assessments</h3>
-                        <ul>
-                          {documents.filter(d => d.document_type === "MATHS_ASSESSMENT").map(doc => (
-                            <li key={doc.id}>
-                              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                                <div>
-                                  <strong>{doc.metadata?.title || "Untitled Assessment"}</strong>
-                                  <br />
-                                  <a href={buildDocumentUrl(doc.file_path)} target="_blank" rel="noreferrer" style={{ fontSize: "0.85rem" }}>
-                                    View Document
-                                  </a>
-                                </div>
-                                {doc.metadata?.result && (
-                                  <span style={{ fontWeight: "bold", color: "#1a2c5a" }}>
-                                    Result: {doc.metadata.result}
-                                  </span>
-                                )}
-                              </div>
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
         </section>
