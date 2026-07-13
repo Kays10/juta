@@ -4,9 +4,39 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "../../../../lib/supabaseClient";
 
-function buildDocumentUrl(path) {
-  const baseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  return `${baseUrl}/storage/v1/object/public/learner-documents/${path}`;
+async function getSignedUrl(path) {
+  const { data, error } = await supabase.storage
+    .from("learner-documents")
+    .createSignedUrl(path, 60 * 60); // 1 hour expiration
+  if (error) {
+    console.error("Signed URL error:", error.message);
+    return "#";
+  }
+  return data?.signedUrl || "#";
+}
+
+function DocumentLink({ path, label }) {
+  const [url, setUrl] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    getSignedUrl(path).then((signedUrl) => {
+      if (isMounted) setUrl(signedUrl);
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [path]);
+
+  if (!url) {
+    return <span>{label} – loading link...</span>;
+  }
+
+  return (
+    <a href={url} target="_blank" rel="noreferrer">
+      {label}
+    </a>
+  );
 }
 
 export default function LearnerDetailPage() {
@@ -18,7 +48,6 @@ export default function LearnerDetailPage() {
   const [contact, setContact] = useState(null);
   const [employment, setEmployment] = useState([]);
   const [documents, setDocuments] = useState([]);
-  const [documentUrls, setDocumentUrls] = useState({});
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [poeFiles, setPoeFiles] = useState([]);
   const [uploadingPoe, setUploadingPoe] = useState(false);
@@ -63,13 +92,7 @@ export default function LearnerDetailPage() {
       setLearner(learnerRow);
       setContact(contactRow);
       setEmployment(employmentRows || []);
-      const docs = documentRows || [];
-      const urls = {};
-      for (const doc of docs) {
-        urls[doc.file_path] = await getSignedUrl(doc.file_path);
-      }
-      setDocumentUrls(urls);
-      setDocuments(docs);
+      setDocuments(documentRows || []);
       setProgress(learnerRow?.completion_percentage || 0);
       setCheckingAuth(false);
     }
@@ -156,18 +179,11 @@ export default function LearnerDetailPage() {
 
       if (dbError) throw dbError;
 
-      // Refresh documents
       const { data: updatedDocs } = await supabase
         .from("documents")
         .select("*")
         .eq("learner_id", learnerId);
-      const docs = updatedDocs || [];
-      const urls = {};
-      for (const doc of docs) {
-        urls[doc.file_path] = await getSignedUrl(doc.file_path);
-      }
-      setDocumentUrls(urls);
-      setDocuments(docs);
+      setDocuments(updatedDocs || []);
 
       setPoeFiles([]);
       alert("POE documents uploaded successfully!");
@@ -453,13 +469,10 @@ export default function LearnerDetailPage() {
                   <ul>
                     {documents.filter(d => !d.document_type.startsWith("POE_")).map((doc) => (
                       <li key={doc.id}>
-                        <a
-                          href={documentUrls[doc.file_path] || "#"}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {doc.document_type} – View / Download
-                        </a>
+                        <DocumentLink
+                          path={doc.file_path}
+                          label={`${doc.document_type} – View / Download`}
+                        />
                       </li>
                     ))}
                   </ul>
@@ -506,9 +519,10 @@ export default function LearnerDetailPage() {
                         <ul>
                           {catDocs.map(doc => (
                             <li key={doc.id}>
-                              <a href={documentUrls[doc.file_path] || "#"} target="_blank" rel="noreferrer">
-                                {doc.file_path.split("_").slice(1).join("_") || doc.document_type}
-                              </a>
+                              <DocumentLink
+                                path={doc.file_path}
+                                label={doc.file_path.split("_").slice(1).join("_") || doc.document_type}
+                              />
                             </li>
                           ))}
                         </ul>
