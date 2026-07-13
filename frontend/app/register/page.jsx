@@ -188,7 +188,7 @@ export default function RegisterPage() {
           <div className="container">
             <div className="page-heading">
               <div className="logo-placeholder">
-                <img src="/logo.png" alt="LH Open Minded Institute logo" />
+                <img src="/logo.png" alt="Juta Consulting logo" />
               </div>
               <h1>Learner Registration</h1>
             </div>

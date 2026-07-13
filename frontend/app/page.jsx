@@ -5,10 +5,10 @@ export default function HomePage() {
         <div className="container header-content">
           <div className="brand">
             <div className="logo-placeholder">
-              <img src="/logo.png" alt="Open Minded Institute logo" />
+              <img src="/logo.png" alt="Juta Consulting logo" />
             </div>
             <div className="brand-text">
-              <h1>LH Open Minded Institute</h1>
+              <h1>Juta Consulting</h1>
               <p>Developing the next generation of IT professionals</p>
             </div>
           </div>
@@ -27,7 +27,7 @@ export default function HomePage() {
         <section className="hero">
           <div className="container hero-content">
             <div className="hero-text">
-              <h2>Welcome to LH Open Minded Institute</h2>
+              <h2>Welcome to Juta Consulting</h2>
               <p>
                 Our mandate is to empower the next generation with future-focused
                 IT skills that transform potential into professional excellence.
@@ -50,7 +50,7 @@ export default function HomePage() {
           <div className="container">
             <h2>Our Programmes</h2>
             <p className="section-intro">
-              LH Open Minded Institute offers industry-aligned IT qualifications
+              Juta Consulting offers industry-aligned IT qualifications
               and skills development programmes, including:
             </p>
             <div className="cards">
@@ -135,7 +135,7 @@ export default function HomePage() {
           <div className="container">
             <h2>Maths Support Programme</h2>
             <p>
-              In addition to our IT qualifications, LH Open Minded Institute
+              In addition to our IT qualifications, Juta Consulting
               offers a Maths Support Programme designed to strengthen
               Mathematics performance.
             </p>
@@ -154,7 +154,7 @@ export default function HomePage() {
 
         <section className="section">
           <div className="container">
-            <h2>Why Choose LH Open Minded Institute?</h2>
+            <h2>Why Choose Juta Consulting?</h2>
             <ul className="list">
               <li>Industry-relevant and future-focused IT programmes</li>
               <li>Structured workplace exposure</li>
@@ -164,7 +164,7 @@ export default function HomePage() {
               <li>Commitment to youth empowerment and skills transformation</li>
             </ul>
             <p>
-              At LH Open Minded Institute, we are not just training learners —
+              At Juta Consulting, we are not just training learners —
               we are developing the next generation of IT professionals.
             </p>
           </div>
@@ -211,7 +211,7 @@ export default function HomePage() {
 
       <footer className="footer">
         <div className="container">
-          <p>© {new Date().getFullYear()} LH Open Minded Institute</p>
+          <p>© {new Date().getFullYear()} Juta Consulting</p>
         </div>
       </footer>
     </div>

@@ -105,14 +105,14 @@ a {
 }
 
 .button-primary {
-  background-color: #1e73be;
+  background-color: #1a2c5a;
   color: #ffffff;
 }
 
 .button-primary:hover {
-  background-color: #145a8e;
+  background-color: #12203f;
   transform: translateY(-1px);
-  box-shadow: 0 10px 20px rgba(30, 115, 190, 0.25);
+  box-shadow: 0 10px 20px rgba(26, 44, 90, 0.25);
 }
 
 .button-primary:active {
@@ -121,12 +121,12 @@ a {
 }
 
 .button-secondary {
-  background-color: #e5f0fb;
-  color: #1e73be;
+  background-color: #e8ebf4;
+  color: #1a2c5a;
 }
 
 .button-secondary:hover {
-  background-color: #d4e6fb;
+  background-color: #d3d8e8;
   transform: translateY(-1px);
   box-shadow: 0 8px 16px rgba(148, 163, 184, 0.25);
 }
@@ -178,7 +178,7 @@ a {
 }
 
 .section-highlight {
-  background-color: #1e73be;
+  background-color: #1a2c5a;
   color: #ffffff;
   text-align: center;
 }
@@ -285,8 +285,8 @@ a {
 .form-section input:focus,
 .form-section select:focus {
   outline: none;
-  border-color: #1e73be;
-  box-shadow: 0 0 0 1px rgba(30, 115, 190, 0.4);
+  border-color: #1a2c5a;
+  box-shadow: 0 0 0 1px rgba(26, 44, 90, 0.4);
   transform: translateY(-1px);
 }
 
@@ -343,8 +343,8 @@ a {
 
 .auth-card input:focus {
   outline: none;
-  border-color: #1e73be;
-  box-shadow: 0 0 0 1px rgba(30, 115, 190, 0.4);
+  border-color: #1a2c5a;
+  box-shadow: 0 0 0 1px rgba(26, 44, 90, 0.4);
   transform: translateY(-1px);
 }
 
@@ -465,7 +465,7 @@ a {
   background: none;
   border: none;
   padding: 0;
-  color: #1e73be;
+  color: #1a2c5a;
   cursor: pointer;
   font-size: 0.9rem;
   text-decoration: underline;
@@ -531,7 +531,7 @@ a {
 .poe-category-section h3 {
   font-size: 1rem;
   margin-bottom: 0.5rem;
-  color: #1e73be;
+  color: #1a2c5a;
 }
 
 .poe-category-section ul {
@@ -545,7 +545,7 @@ a {
 }
 
 .poe-category-section a {
-  color: #1e73be;
+  color: #1a2c5a;
   text-decoration: underline;
 }
 
@@ -573,7 +573,7 @@ a {
 
 .progress-bar-fill {
   height: 100%;
-  background-color: #1e73be;
+  background-color: #1a2c5a;
   transition: width 0.3s ease;
 }
 

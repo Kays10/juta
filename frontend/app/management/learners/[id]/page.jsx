@@ -641,7 +641,7 @@ export default function LearnerDetailPage() {
                                   </a>
                                 </div>
                                 {doc.metadata?.result && (
-                                  <span style={{ fontWeight: "bold", color: "#1e73be" }}>
+                                  <span style={{ fontWeight: "bold", color: "#1a2c5a" }}>
                                     Result: {doc.metadata.result}
                                   </span>
                                 )}
