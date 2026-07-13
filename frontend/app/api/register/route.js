@@ -147,14 +147,36 @@ export async function POST(request) {
       }
     }
 
-    // Update document records with actual learner ID
+    // Move uploaded documents from their temp path to the real learner ID
+    // path in Storage, then record the NEW path in the database. Simply
+    // rewriting the DB string (old behaviour) left the DB pointing at a
+    // path that never existed in Storage, causing "Object not found".
     if (documents && documents.length > 0) {
-      // Update file paths to use real learner ID instead of temp ID
-      const documentRows = documents.map((doc) => ({
-        learner_id: learnerId,
-        document_type: doc.document_type,
-        file_path: doc.file_path.replace(/temp_\d+/, learnerId),
-      }));
+      const documentRows = [];
+
+      for (const doc of documents) {
+        const oldPath = doc.file_path;
+        const newPath = oldPath.replace(/temp_\d+/, learnerId);
+
+        if (newPath !== oldPath) {
+          const { error: moveError } = await supabase.storage
+            .from("learner-documents")
+            .move(oldPath, newPath);
+
+          if (moveError) {
+            return NextResponse.json(
+              { error: `Failed to relocate ${doc.document_type}: ${moveError.message}` },
+              { status: 500 },
+            );
+          }
+        }
+
+        documentRows.push({
+          learner_id: learnerId,
+          document_type: doc.document_type,
+          file_path: newPath,
+        });
+      }
 
       const { error: docsError } = await supabase
         .from("documents")
