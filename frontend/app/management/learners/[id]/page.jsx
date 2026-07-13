@@ -18,6 +18,7 @@ export default function LearnerDetailPage() {
   const [contact, setContact] = useState(null);
   const [employment, setEmployment] = useState([]);
   const [documents, setDocuments] = useState([]);
+  const [documentUrls, setDocumentUrls] = useState({});
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [poeFiles, setPoeFiles] = useState([]);
   const [uploadingPoe, setUploadingPoe] = useState(false);
@@ -62,7 +63,13 @@ export default function LearnerDetailPage() {
       setLearner(learnerRow);
       setContact(contactRow);
       setEmployment(employmentRows || []);
-      setDocuments(documentRows || []);
+      const docs = documentRows || [];
+      const urls = {};
+      for (const doc of docs) {
+        urls[doc.file_path] = await getSignedUrl(doc.file_path);
+      }
+      setDocumentUrls(urls);
+      setDocuments(docs);
       setProgress(learnerRow?.completion_percentage || 0);
       setCheckingAuth(false);
     }
@@ -154,7 +161,13 @@ export default function LearnerDetailPage() {
         .from("documents")
         .select("*")
         .eq("learner_id", learnerId);
-      setDocuments(updatedDocs || []);
+      const docs = updatedDocs || [];
+      const urls = {};
+      for (const doc of docs) {
+        urls[doc.file_path] = await getSignedUrl(doc.file_path);
+      }
+      setDocumentUrls(urls);
+      setDocuments(docs);
 
       setPoeFiles([]);
       alert("POE documents uploaded successfully!");
@@ -441,7 +454,7 @@ export default function LearnerDetailPage() {
                     {documents.filter(d => !d.document_type.startsWith("POE_")).map((doc) => (
                       <li key={doc.id}>
                         <a
-                          href={buildDocumentUrl(doc.file_path)}
+                          href={documentUrls[doc.file_path] || "#"}
                           target="_blank"
                           rel="noreferrer"
                         >
@@ -493,7 +506,7 @@ export default function LearnerDetailPage() {
                         <ul>
                           {catDocs.map(doc => (
                             <li key={doc.id}>
-                              <a href={buildDocumentUrl(doc.file_path)} target="_blank" rel="noreferrer">
+                              <a href={documentUrls[doc.file_path] || "#"} target="_blank" rel="noreferrer">
                                 {doc.file_path.split("_").slice(1).join("_") || doc.document_type}
                               </a>
                             </li>
